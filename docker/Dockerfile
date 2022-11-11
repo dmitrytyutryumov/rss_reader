@@ -14,10 +14,9 @@ RUN poetry config virtualenvs.create false
 COPY poetry.lock .
 COPY pyproject.toml .
 
-RUN poetry install --no-dev
+RUN poetry install --only main --no-root
 
-COPY libs ./libs
-COPY api_service .
+COPY src/api .
 
 EXPOSE 8000
 

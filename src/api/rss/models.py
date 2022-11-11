@@ -9,13 +9,20 @@ class RssModelManager(models.Manager):
 
 class RSSModel(models.Model):
     title = models.CharField(max_length=300)
+    description = models.TextField()
     link = models.URLField(verbose_name="RSS source link")
+    language = models.CharField(max_length=30, blank=True, default="")
+    copyright = models.CharField(max_length=100, blank=True, default="")
+    managingEditor = models.CharField(max_length=200, blank=True, default="")
+    webMaster = models.CharField(max_length=200, blank=True, default="")
+    category = models.CharField(max_length=200, blank=True, default="")
+    generator = models.CharField(max_length=100, blank=True, default="")
+    docs = models.URLField(blank=True, default="")
     ttl = models.IntegerField(default=60, verbose_name="Refresh time range")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserRSSModel")
-
     objects = RssModelManager()
 
     class Meta:

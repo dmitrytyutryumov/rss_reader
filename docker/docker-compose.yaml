@@ -3,38 +3,44 @@ services:
   api:
     build:
       context: ../
-      dockerfile: Dockerfile.APIService
+      dockerfile: docker/Dockerfile
     container_name: 'api'
     ports:
       - "8000:8000"
     env_file:
-      - ../api_service/.env-base
-    environment:
-      - STOCK_CLIENT_HOST=http://stocks:8000
-    volumes:
-        - ../api_service/db:/usr/src/app/db/
+      - ../.env
+    depends_on:
+      - db
     networks:
         - rss_network
+    restart: on-failure
 
-  scrapper:
-    build:
-      context: ../
-      dockerfile: Dockerfile.Scrapper
-    container_name: 'stocks'
-    env_file:
-      - ../stock_service/.env-base
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
     ports:
-      - "8001:8000"
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ../.env
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/
     networks:
       - rss_network
+    restart: on-failure
 
   db:
     image: postgres
-    environment:
-      POSTGRES_PASSWORD: example
-    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - ../.env
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
     networks:
       - rss_network
+    restart: on-failure
+
 
 networks:
   rss_network:

@@ -1,6 +1,9 @@
 .EXPORT_ALL_VARIABLES:
 PYTHONPATH=./
-POETRY ?= $(HOME)/.poetry/bin/poetry
+POETRY ?= .venv/bin/poetry
+API_ROOT_FOLDER = ./src/api
+
+include ./.env
 
 .PHONY: fmt
 fmt:
@@ -13,25 +16,19 @@ lint:
 	poetry run isort . --diff
 	poetry run flake8 . --config=setup.cfg
 
-.PHONY: create-local-db
-create-local-db:
-	mkdir -p ./api_service/db
 
 .PHONY: api-server
-api-server: create-local-db
-	poetry run python api_service/manage.py runserver localhost:8000
+api-server:
+	ENV
+	poetry run python ${API_ROOT_FOLDER}/manage.py runserver localhost:8000
 
 .PHONY: api-server-migrate
-api-server-migrate: create-local-db
-	poetry run python api_service/manage.py migrate
+api-server-migrate:
+	poetry run python ${API_ROOT_FOLDER}/manage.py migrate
 
 .PHONY: api-server-createsuperuser
 api-server-createsuperuser:
-	poetry run python api_service/manage.py createsuperuser
-
-.PHONY: stock-server
-stock-server:
-	poetry run python stock_service/manage.py runserver localhost:8001
+	poetry run python ${API_ROOT_FOLDER}/manage.py createsuperuser
 
 .PHONY: docker-up
 docker-up:

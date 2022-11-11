@@ -10,18 +10,15 @@ import feedparser
 @dataclasses.dataclass
 class RSSItem:
     title: str
+    description: str
     link: str
+    author: str
+    category: str
+    comments: str
     guid: str
+    source: str
     published_date: Optional[datetime]
     media_content: Optional[list[dict]]
-
-
-@dataclasses.dataclass
-class RSSSource:
-    name: str
-    link: str
-    last_updated: datetime
-    published_date: datetime
 
 
 class RSSParser:
@@ -40,9 +37,14 @@ class RSSParser:
                 published = datetime.fromtimestamp(mktime(published))
             rss_items.append(
                 RSSItem(
-                    title=item.get("title", ""),
+                    title=item["title"],
+                    description=item["description"],
                     link=item.get("link", ""),
+                    author=item.get("author", ""),
+                    category=item.get("category", ""),
+                    comments=item.get("comments", ""),
                     guid=item.get("id", uuid.uuid4().hex),
+                    source=item.get("source", ""),
                     published_date=published,
                     media_content=item.get("media_content"),
                 )
