@@ -1,0 +1,41 @@
+version: "3.2"
+services:
+  api:
+    build:
+      context: ../
+      dockerfile: Dockerfile.APIService
+    container_name: 'api'
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../api_service/.env-base
+    environment:
+      - STOCK_CLIENT_HOST=http://stocks:8000
+    volumes:
+        - ../api_service/db:/usr/src/app/db/
+    networks:
+        - rss_network
+
+  scrapper:
+    build:
+      context: ../
+      dockerfile: Dockerfile.Scrapper
+    container_name: 'stocks'
+    env_file:
+      - ../stock_service/.env-base
+    ports:
+      - "8001:8000"
+    networks:
+      - rss_network
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example
+    restart: always
+    networks:
+      - rss_network
+
+networks:
+  rss_network:
+    driver: bridge
