@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class RssModelManager(models.Manager):
@@ -9,18 +10,12 @@ class RssModelManager(models.Manager):
 
 class RSSModel(models.Model):
     title = models.CharField(max_length=300)
-    description = models.TextField()
-    link = models.URLField(verbose_name="RSS source link")
+    link = models.URLField(verbose_name="RSS source link", unique=True)
     language = models.CharField(max_length=30, blank=True, default="")
-    copyright = models.CharField(max_length=100, blank=True, default="")
-    managingEditor = models.CharField(max_length=200, blank=True, default="")
-    webMaster = models.CharField(max_length=200, blank=True, default="")
     category = models.CharField(max_length=200, blank=True, default="")
-    generator = models.CharField(max_length=100, blank=True, default="")
-    docs = models.URLField(blank=True, default="")
     ttl = models.IntegerField(default=60, verbose_name="Refresh time range")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(default=timezone.now)
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserRSSModel")
     objects = RssModelManager()
@@ -39,6 +34,9 @@ class UserRSSModel(models.Model):
 
     class Meta:
         db_table = "user_rss"
+        index_together = [
+            ("user", "rss"),
+        ]
 
     def __str__(self):
         return self.rss.title
@@ -50,11 +48,12 @@ class RssItemModelManager(models.Manager):
 
 
 class RSSItemModel(models.Model):
-    guid = models.CharField(max_length=300)
+    guid = models.CharField(max_length=300, primary_key=True, unique=True)
     title = models.CharField(max_length=300)
     link = models.URLField(verbose_name="RSS item link")
+    author = models.CharField(max_length=250, default="", null=True)
     published_date = models.DateTimeField(null=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(default=timezone.now)
 
     rss = models.ForeignKey(RSSModel, on_delete=models.CASCADE)
     user_rss = models.ManyToManyField(UserRSSModel, through="UserRSSItemModel")
@@ -77,6 +76,9 @@ class UserRSSItemModel(models.Model):
     class Meta:
         db_table = "user_rss_items"
         ordering = ["-rss_item__published_date"]
+        index_together = [
+            ("following_rss", "rss_item"),
+        ]
 
     def __str__(self):
         return self.rss_item.title

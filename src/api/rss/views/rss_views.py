@@ -4,7 +4,12 @@ from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schem
 from rest_framework import exceptions, generics, permissions, response
 from rest_framework.request import Request
 from rss.models import RSSModel
-from rss.serializers import RSSSerializer, UserRssFollowingRequest
+from rss.serializers import (
+    ForceUpdateRSSSerializer,
+    RSSSerializer,
+    UserRssFollowingRequest,
+)
+from rss.tasks import update_rss_feeds
 from utils import to_bool
 
 
@@ -68,5 +73,11 @@ class UserRSSFollowingView(generics.GenericAPIView):
 
 
 class ForceRssUpdate(generics.GenericAPIView):
-    def post(self):
-        pass
+    serializer_class = ForceUpdateRSSSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_rss_feeds.delay(rss_feed_id=serializer.validated_data["pk"])
+        return response.Response()

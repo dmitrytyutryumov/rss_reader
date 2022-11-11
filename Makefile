@@ -5,6 +5,11 @@ API_ROOT_FOLDER = ./src/api
 
 include ./.env
 
+.PHONY: install-packages
+install-packages:
+	pip install poetry
+	poetry install --no-root
+
 .PHONY: fmt
 fmt:
 	poetry run black .

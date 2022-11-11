@@ -40,3 +40,7 @@ class UserRssFollowingRequest(serializers.Serializer):
 
 class MarkRSSItemSerializer(serializers.Serializer):
     rss_id = serializers.IntegerField(required=True)
+
+
+class ForceUpdateRSSSerializer(serializers.Serializer):
+    pk = serializers.IntegerField(required=True)
