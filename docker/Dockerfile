@@ -14,10 +14,13 @@ RUN poetry config virtualenvs.create false
 COPY poetry.lock .
 COPY pyproject.toml .
 
+COPY docker/run.sh .
+RUN chmod +x run.sh
+
 RUN poetry install --only main --no-root
 
 COPY src/api .
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["bash", "run.sh"]

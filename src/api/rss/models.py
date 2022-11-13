@@ -20,6 +20,8 @@ class RSSModel(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="UserRSSModel")
     objects = RssModelManager()
 
+    unavailable = models.DateTimeField(null=True)
+
     class Meta:
         db_table = "rss"
 
@@ -48,7 +50,7 @@ class RssItemModelManager(models.Manager):
 
 
 class RSSItemModel(models.Model):
-    guid = models.CharField(max_length=300, primary_key=True, unique=True)
+    guid = models.CharField(max_length=300, unique=True)
     title = models.CharField(max_length=300)
     link = models.URLField(verbose_name="RSS item link")
     author = models.CharField(max_length=250, default="", null=True)

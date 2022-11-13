@@ -43,4 +43,4 @@ class MarkRSSItemSerializer(serializers.Serializer):
 
 
 class ForceUpdateRSSSerializer(serializers.Serializer):
-    pk = serializers.IntegerField(required=True)
+    id = serializers.IntegerField(required=True)

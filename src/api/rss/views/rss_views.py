@@ -9,7 +9,7 @@ from rss.serializers import (
     RSSSerializer,
     UserRssFollowingRequest,
 )
-from rss.tasks import update_rss_feeds
+from rss.tasks import force_update_rss_feed
 from utils import to_bool
 
 
@@ -79,5 +79,7 @@ class ForceRssUpdate(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        update_rss_feeds.delay(rss_feed_id=serializer.validated_data["pk"])
+        force_update_rss_feed.delay(
+            rss_feed_id=serializer.validated_data["id"], user_email=request.user.email
+        )
         return response.Response()

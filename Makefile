@@ -22,18 +22,32 @@ lint:
 	poetry run flake8 . --config=setup.cfg
 
 
-.PHONY: api-server
-api-server:
+.PHONY: run-api
+run-api:
 	ENV
 	poetry run python ${API_ROOT_FOLDER}/manage.py runserver localhost:8000
 
+
+.PHONY: makemigrations
+makemigrations:
+	poetry run python ${API_ROOT_FOLDER}/manage.py makemigrations
+
+
 .PHONY: api-server-migrate
-api-server-migrate:
+migrate:
 	poetry run python ${API_ROOT_FOLDER}/manage.py migrate
 
-.PHONY: api-server-createsuperuser
-api-server-createsuperuser:
+.PHONY: createsuperuser
+createsuperuser:
 	poetry run python ${API_ROOT_FOLDER}/manage.py createsuperuser
+
+.PHONY: add_default_rss
+add_default_rss:
+	poetry run python ${API_ROOT_FOLDER}/manage.py add_default_rss
+
+.PHONY: run-celery
+run-celery:
+	cd src/api && poetry run celery -A api worker -l INFO -B
 
 .PHONY: docker-up
 docker-up:

@@ -1,17 +1,17 @@
 import pytest
-from rss.tests.factory import RSSItemModelFactory, RSSModelFactory, UserFactory
+from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import AccessToken
+from rss.tests.factory import UserFactory
 
 
-@pytest.fixture(autouse=True)
-def user():
+@pytest.fixture()
+def user(transactional_db):
     return UserFactory()
 
 
 @pytest.fixture(autouse=True)
-def rss():
-    return RSSModelFactory()
-
-
-@pytest.fixture
-def rss_item():
-    return RSSItemModelFactory()
+def client(user):
+    client = APIClient(enforce_csrf_checks=True)
+    client.credentials()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(user)}")
+    return client

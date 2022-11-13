@@ -22,7 +22,7 @@ class UserRSSItemView(generics.ListAPIView):
         if is_read is not None:
             is_read = to_bool(is_read)
             if is_read:
-                queryset = queryset.filter(user_rss=True)
+                queryset = queryset.filter(userrssitemmodel__id__isnull=False)
             else:
                 queryset = queryset.filter(userrssitemmodel__id__isnull=True)
         return queryset.filter(rss__users=self.request.user)
