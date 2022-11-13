@@ -605,7 +605,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-/static
+*/static
 
 
 docker/data

@@ -6,7 +6,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR $ROOT_DIR
-RUN mkdir $ROOT_DIR/db
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false

@@ -21,17 +21,18 @@ lint:
 	poetry run isort . --diff
 	poetry run flake8 . --config=setup.cfg
 
+.PHONY: test
+test:
+	poetry run pytest src/api
 
 .PHONY: run-api
 run-api:
 	ENV
 	poetry run python ${API_ROOT_FOLDER}/manage.py runserver localhost:8000
 
-
 .PHONY: makemigrations
 makemigrations:
 	poetry run python ${API_ROOT_FOLDER}/manage.py makemigrations
-
 
 .PHONY: api-server-migrate
 migrate:
@@ -40,6 +41,10 @@ migrate:
 .PHONY: createsuperuser
 createsuperuser:
 	poetry run python ${API_ROOT_FOLDER}/manage.py createsuperuser
+
+.PHONY: collectstatic
+collectstatic:
+	poetry run python ${API_ROOT_FOLDER}/manage.py collectstatic
 
 .PHONY: add_default_rss
 add_default_rss:
@@ -61,7 +66,10 @@ docker-down:
 docker-migrate:
 	docker exec -it api poetry run python manage.py migrate
 
-
 .PHONY: docker-createsuperuser
-docker-createuser:
+docker-createsuperuser:
 	docker exec -it api poetry run python manage.py createsuperuser
+
+.PHONY: docker-add_default_rss
+docker-add_default_rss:
+	docker exec -it api poetry run python manage.py add_default_rss

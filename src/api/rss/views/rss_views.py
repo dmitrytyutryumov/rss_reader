@@ -18,7 +18,7 @@ class UserRSSView(generics.ListAPIView):
     serializer_class = RSSSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def filter_queryset(self, queryset: QuerySet):
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         filter_by_user = to_bool(self.request.query_params.get("following"))
         if filter_by_user:
             queryset = queryset.filter(users=self.request.user)
@@ -40,7 +40,7 @@ class UserRSSView(generics.ListAPIView):
             ),
         ],
     )
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs) -> response.Response:
         return super().get(request, *args, **kwargs)
 
 
@@ -49,17 +49,17 @@ class UserRSSFollowingView(generics.GenericAPIView):
     serializer_class = UserRssFollowingRequest
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request: Request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs) -> response.Response:
         rss_model = self.get_object()
         rss_model.users.add(self.request.user)
         return response.Response(status=201)
 
-    def delete(self, request: Request):
+    def delete(self, request: Request) -> response.Response:
         rss_model = self.get_object()
         rss_model.users.remove(self.request.user)
         return response.Response(status=204)
 
-    def _get_rss_feed_id(self):
+    def _get_rss_feed_id(self) -> int:
         serializer = UserRssFollowingRequest(data=self.request.data)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data["id"]
@@ -76,7 +76,7 @@ class ForceRssUpdate(generics.GenericAPIView):
     serializer_class = ForceUpdateRSSSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request):
+    def post(self, request: Request) -> response.Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         force_update_rss_feed.delay(

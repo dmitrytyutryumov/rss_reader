@@ -14,8 +14,6 @@ class RSSModelAdmin(admin.ModelAdmin):
     )
     fields = ("link",)
 
-    # def save_model(self, request, obj, form, change):
-
 
 @admin.register(RSSItemModel)
 class RSSItemModelAdmin(admin.ModelAdmin):
